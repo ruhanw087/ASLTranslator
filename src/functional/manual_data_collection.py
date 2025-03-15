@@ -4,7 +4,7 @@ import cv2
 print(cv2.__version__)
 
 def collect_images():
-    base_dir= "ASLTranslator/src/maual_images"
+    base_dir= "src/data/manual_images"
     sub_dir = ['1','2','3']
     if not os.path.exists(base_dir):
         os.makedirs(base_dir)
@@ -33,7 +33,7 @@ def collect_images():
         key = cv2.waitKey(1) & 0xFF
 
         if key==ord('r'):
-            print("Capturing next 100 frames")
+            print(f"Capturing next 100 frames for {key_list[i]}")
             while count[key_list[i]] <100:
                 ret1,frame1 = cap.read()
                 cv2.waitKey(1)
