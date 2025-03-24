@@ -6,6 +6,8 @@ print(cv2.__version__)
 def collect_images():
     base_dir= "src/data/manual_images"
     sub_dir = ['1','2','3']
+
+    
     if not os.path.exists(base_dir):
         os.makedirs(base_dir)
     for sub in sub_dir:
