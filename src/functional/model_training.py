@@ -22,7 +22,7 @@ def train_model(model_name):
 
     score = accuracy_score(y_pred, y_test)
 
-    joblib.dump(model,f"src/functional/{model_name}model.pkl")
+    joblib.dump(model,f"src/functional/{model_name}.pkl")
 
     return score
 
