@@ -1,16 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flask Video Stream</title>
     <style>
+            h1 { 
+                position: absolute;
+                top: 10px;  /* Distance from the top */
+                left: 10px; /* Distance from the left */
+                margin: 0;
+            }
         body { text-align: center; font-family: Arial, sans-serif; }
         img { border: 2px solid black; width: 60%; }
     </style>
 </head>
 <body>
-    <h1>Live Video Feed</h1>
+    <h1>Translator Gator</h1>
     <img src="{{ url_for('video_prediction') }}" alt="Video Stream">
 </body>
 </html>

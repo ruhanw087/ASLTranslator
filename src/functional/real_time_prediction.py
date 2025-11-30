@@ -39,8 +39,9 @@ def predict_frame(frame,image):
             for landmark in each_hand.landmark:
                 hand.append(landmark.x)
                 hand.append(landmark.y)
+                hand.append(landmark.z)
                     
-        value = model.predict([hand[0:42]])
+        value = model.predict([hand[0:63]])
         return value[0]
     else:
         return "waiting for hands"
@@ -76,6 +77,7 @@ def prediction_generator():
             return
         while True:
             ret,frame = cap.read()
+            frame = cv2.flip(frame,1)
             if not ret:
                 print("ret not opened")
                 raise Exception("Failed to encode frame")
