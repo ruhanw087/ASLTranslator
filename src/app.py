@@ -21,9 +21,10 @@ initialization('RandomForest')
 
 @socketio.on('frame')
 def handle_frame(data):
-    print("Frame received:", data.keys() if isinstance(data, dict) else type(data))
-    b64data = data.split(',')[1]
-    img_bytes = base64.b64decode(b64data)
+    image_b64 = data.get('image')  # get the 'image' field
+    if not image_b64:
+        return
+    img_bytes = base64.b64decode(image_b64)
     np_arr = np.frombuffer(img_bytes, np.uint8)
     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
     frame = cv2.flip(frame,1)
@@ -36,7 +37,6 @@ def handle_frame(data):
     'image': f"data:image/jpeg;base64,{jpg_as_text}",
     'prediction': prediction
         }   )
-    print("Processed frame emitted")
 
 if __name__ == "__main__":
     socketio.run(app, host='0.0.0.0', port = 5000)
