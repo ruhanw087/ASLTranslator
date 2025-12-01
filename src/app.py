@@ -7,6 +7,7 @@ import cv2
 app = Flask(__name__)
 initialization('RandomForest')
 
+@app.route("/video_prediction")
 def video_prediction():
     return Response(
         prediction_generator(),
