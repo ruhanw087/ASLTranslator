@@ -21,6 +21,7 @@ initialization('RandomForest')
 
 @socketio.on('frame')
 def handle_frame(data):
+    print("Frame received:", data.keys() if isinstance(data, dict) else type(data))
     b64data = data.split(',')[1]
     img_bytes = base64.b64decode(b64data)
     np_arr = np.frombuffer(img_bytes, np.uint8)
@@ -31,7 +32,11 @@ def handle_frame(data):
     cv2.putText(frame, str(prediction), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2, cv2.LINE_AA)
     _, buffer = cv2.imencode('.jpg', frame)
     jpg_as_text = base64.b64encode(buffer).decode('utf-8')
-    emit('processed_frame', f"data:image/jpeg;base64,{jpg_as_text}")
+    emit('processed_frame', {
+    'image': f"data:image/jpeg;base64,{jpg_as_text}",
+    'prediction': prediction
+        }   )
+    print("Processed frame emitted")
 
 if __name__ == "__main__":
     socketio.run(app, host='0.0.0.0', port = 5000)
