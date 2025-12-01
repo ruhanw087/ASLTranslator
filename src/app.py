@@ -35,12 +35,12 @@ def handle_frame(data):
     frame_small = cv2.resize(frame, (160, 120))
     frame = cv2.flip(frame,1)
     image_rgb = cv2.cvtColor(frame_small, cv2.COLOR_BGR2RGB)
-    prediction = predict_frame(frame, image_rgb)
+    prediction = predict_frame(frame_small, image_rgb)
     cv2.putText(frame, str(prediction), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2, cv2.LINE_AA)
-    _, buffer = cv2.imencode('.jpg', frame_small, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
-    annotated_b64 = "data:image/jpeg;base64," + base64.b64encode(buffer).decode()
+    _, buffer = cv2.imencode('.jpg', frame)
+    jpg_as_text = base64.b64encode(buffer).decode('utf-8')
     emit('processed_frame', {
-    'image': annotated_b64
+    'image': f"data:image/jpeg;base64,{jpg_as_text}"
         })
 
 if __name__ == "__main__":
