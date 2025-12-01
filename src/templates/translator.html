@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ASL Translator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        video, img { border: 1px solid black; margin: 10px; }
+        #prediction { font-size: 24px; font-weight: bold; color: red; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Live ASL Translator</h1>
+    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+    <img id="processedFrame" width="320" height="240" alt="Processed frame">
+    <div id="prediction">Waiting for hands...</div>
+
+```
+<script>
+const video = document.createElement('video'); // hidden video element
+video.autoplay = true;
+video.width = 160;
+video.height = 120;
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const processedImg = document.getElementById('processedFrame');
+    const predictionEl = document.getElementById('prediction');
+
+    // Access webcam
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => { 
+            video.srcObject = stream;
+            console.log("Webcam access granted");
+        })
+        .catch(err => console.error("Webcam error:", err));
+
+    // Connect to Socket.IO server
+    const socket = io("http://ec2-3-14-3-38.us-east-2.compute.amazonaws.com", { transports: ["websocket"] });
+
+    socket.on('connect', () => {
+        console.log("Connected to Socket.IO server with ID:", socket.id);
+    });
+
+    socket.on('connect_error', (err) => {
+        console.error("Socket.IO connection error:", err);
+    });
+
+    socket.on('processed_frame', (data) => {
+    if(data.image) processedImg.src = data.image;   // refresh frame
+    if(data.prediction) predictionEl.textContent = "Prediction: " + data.prediction;
+});
+
+    function sendFrame() {
+        if(video.readyState !== 4) return; // Video not ready yet
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(blob => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const b64data = reader.result;
+                socket.emit('frame', { image: b64data });
+                console.log("Frame sent", b64data.slice(0,50));
+            };
+            reader.readAsDataURL(blob);
+        }, 'image/jpeg');
+    }
+
+    // Send frames at ~5 FPS
+    setInterval(sendFrame, 100);
+</script>
+```
+
+</body>
+</html>

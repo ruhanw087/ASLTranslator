@@ -1,5 +1,5 @@
 # server.py
-from flask import Flask
+from flask import Flask,render_template
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 import cv2
@@ -18,6 +18,10 @@ mp_hands = None
 mp_drawing = None
 
 initialization('RandomForest')
+
+@app.route('/translator')
+def translator():
+    return render_template('translator.html')
 
 @socketio.on('frame')
 def handle_frame(data):
