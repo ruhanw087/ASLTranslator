@@ -4,6 +4,8 @@ import numpy as np
 import mediapipe as mp
 import cv2
 import io
+from flask_cors import CORS
+CORS(app)
 
 app = Flask(__name__)
 initialization('RandomForest')
