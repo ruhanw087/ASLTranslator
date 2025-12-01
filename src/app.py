@@ -21,8 +21,7 @@ initialization('RandomForest')
 
 @socketio.on('frame')
 def handle_frame(data):
-    print("Frame received:", data.keys() if isinstance(data, dict) else type(data))
-    image_b64 = data.get('image')  # get the 'image' field
+    image_b64 = data.get('image')
     if not image_b64:
         return
     try:
@@ -33,17 +32,16 @@ def handle_frame(data):
     img_bytes = base64.b64decode(b64_data)
     np_arr = np.frombuffer(img_bytes, np.uint8)
     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+    frame_small = cv2.resize(frame, (160, 120))
     frame = cv2.flip(frame,1)
-    image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    image_rgb = cv2.cvtColor(frame_small, cv2.COLOR_BGR2RGB)
     prediction = predict_frame(frame, image_rgb)
     cv2.putText(frame, str(prediction), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2, cv2.LINE_AA)
-    _, buffer = cv2.imencode('.jpg', frame)
-    jpg_as_text = base64.b64encode(buffer).decode('utf-8')
+    _, buffer = cv2.imencode('.jpg', frame_small, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+    annotated_b64 = "data:image/jpeg;base64," + base64.b64encode(buffer).decode()
     emit('processed_frame', {
-    'image': f"data:image/jpeg;base64,{jpg_as_text}",
-    'prediction': prediction
-        }   )
-    print("Emitted")
+    'image': annotated_b64
+        })
 
 if __name__ == "__main__":
     socketio.run(app, host='0.0.0.0', port = 5000)
