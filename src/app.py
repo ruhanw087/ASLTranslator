@@ -24,7 +24,12 @@ def handle_frame(data):
     image_b64 = data.get('image')  # get the 'image' field
     if not image_b64:
         return
-    img_bytes = base64.b64decode(image_b64)
+    try:
+        b64_data = image_b64.split(',')[1]
+    except IndexError:
+        print("Invalid image data")
+        return
+    img_bytes = base64.b64decode(b64_data)
     np_arr = np.frombuffer(img_bytes, np.uint8)
     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
     frame = cv2.flip(frame,1)
