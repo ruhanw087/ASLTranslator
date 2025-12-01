@@ -10,7 +10,9 @@ mp_drawing = None
 
 def initialization(model_name):
     global model
-    model = joblib.load(f"src/functional/{model_name}.pkl")
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(BASE_DIR, "functional", f"{model_name}.pkl")
+    model = joblib.load(model_path)
     global hands
     global mp_hands
     mp_hands = mp.solutions.hands
